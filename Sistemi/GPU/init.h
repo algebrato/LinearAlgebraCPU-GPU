@@ -1,0 +1,1 @@
+void inizializza(int i);
