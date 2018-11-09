@@ -45,10 +45,10 @@ ESEGUIBILE	:= trasponi_gpu.x
 OBJ		:= trasponi_gpu.o
 ifdef DEBUGMODE
 FLAGS 		:= -O2 -g --ptxas-options=-v
-ARCH 		:= -arch=sm_20
+#ARCH 		:= -arch=sm_20
 else
 FLAGS		:= -O2
-ARCH		:= -arch=sm_20
+#ARCH		:= -arch=sm_20
 endif
 %.o : %.cu
 	$(NVCC) ${FLAGS} ${ARCH} -c $< 

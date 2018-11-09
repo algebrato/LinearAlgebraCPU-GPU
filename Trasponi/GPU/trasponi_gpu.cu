@@ -8,11 +8,10 @@
 //#define DIM 19200
 //#define DIM 22400
 //#define DIM 25600
-#define DIM 4096
+#define DIM 16392
  
 #define DIM_BLOC 32
 #define DEVICE 0
-//ciao
 void inizializza(int i){
 
         cudaDeviceProp prop;
@@ -53,7 +52,6 @@ __global__ void trasponi(float *out, float *idata, int larghezza, int altezza){
 	       	SubMat[threadIdx.y+i][threadIdx.x] = idata[indx_i+i*larghezza];
 	}
 
-	printf("%i\n",threadIdx.x);
 	__syncthreads();
 
 	for(int i=0; i <DIM_BLOC; i+=DIM_BLOC){
@@ -156,21 +154,22 @@ int main(){
 	cudaEventRecord(stop,0);
 	cudaEventSynchronize(stop);
 
-
 	float TempoExe;
 	cudaEventElapsedTime(&TempoExe,start,stop);
 
-	printf("Tempo di Esecuzione, No_CONFLICT: %f ms\n",TempoExe);
+	printf("Tempo di Esecuzione: \t\t\t%f ms\n",TempoExe);
 
-	cudaMemcpy(h_out, d_omat, DIM*DIM*sizeof(float), cudaMemcpyDeviceToHost);
-	
-	cudaEventRecord(T2,0);
+	cudaEventRecord(start,0);
+	trasponiDiag<<<block, threads>>>(d_omat, d_imat, DIM, DIM);
+	cudaEventRecord(stop,0);
+	cudaEventSynchronize(stop);
 
-	float diffTOT;
-	cudaEventElapsedTime(&diffTOT,T1,T2);
-	printf("Tempo di Esecuzione Totale (comprese copie di memoria)= %f\n",diffTOT);
+	cudaEventElapsedTime(&TempoExe,start,stop);
 
-	//libearare memoria
+
+	printf("Tempo di Esecuzione, No_CONFLICT: \t%f ms\n",TempoExe);
+
+
 	cudaFree(d_imat);
 	cudaFree(d_omat);
 	free(h_mat);
